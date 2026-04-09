@@ -1,0 +1,6 @@
+{
+  "parent": "mofus_better_end_:displaysettings/clocktowerbell.item",
+  "textures": {
+    "particle": "mofus_better_end_:block/titaniumblock"
+  }
+}

@@ -1,0 +1,50 @@
+/effect give @a health_boost 1000000 25
+/kill
+/gamemode
+/gamemode creative
+/gamemode survival
+/kill
+/gamemode creative
+/gamemode survival
+/kill
+/gamemode survival
+/kill
+/w
+/kill
+/w
+/kill
+/w
+/kill
+/
+/kill
+/time set day
+/gamemode creative
+/gamemode
+/gamemode survival
+/gamemode creative
+/gamemode survival
+/kill
+/gamemode creative
+/gamemode survival
+/kill
+/time set day
+/kill
+/corehealth_skip
+/kill
+/give Dev mofus_better_end_:mech_creation_station
+/give Dev mofus_better_end_:nautilus_sub_blueprint
+/give Dev mofus_better_end_:nautilus_thruster
+/give Dev mofus_better_end_:titanium_ingot
+/give Dev mofus_better_end_:nautilus_thruster
+/gamemode creative
+/give Dev mofus_better_end_:nautilus_sub_blueprint
+/data get block -2 70 7
+/give @a mofus_better_end_:mech_creation_station
+/data get block -5 101 7
+/setblock -5 101 7 mofus_better_end_:mech_creation_station[animation=2]
+/data get block -5 100 2
+/summon mofus_better_end_:nautilus_sub ~ ~ ~
+/give Dev mofus_better_end_:mech_creation_station
+/setblock 118 69 1 mofus_better_end_:mech_creation_station[animation=2]
+/setblock 118 80 1 mofus_better_end_:mech_creation_station[animation=2]
+/summon mofus_better_end_:nautilus_sub ~ ~ ~
