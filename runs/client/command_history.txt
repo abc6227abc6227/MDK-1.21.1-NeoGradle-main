@@ -1,4 +1,3 @@
-/effect give @a health_boost 1000000 25
 /kill
 /gamemode
 /gamemode creative
@@ -48,3 +47,4 @@
 /setblock 118 69 1 mofus_better_end_:mech_creation_station[animation=2]
 /setblock 118 80 1 mofus_better_end_:mech_creation_station[animation=2]
 /summon mofus_better_end_:nautilus_sub ~ ~ ~
+/summon lwl
