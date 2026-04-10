@@ -1,0 +1,6 @@
+{
+  "parent": "lwlwlwl_mech_:displaysettings/clocktowerbell.item",
+  "textures": {
+    "particle": "lwlwlwl_mech_:block/titaniumblock"
+  }
+}
