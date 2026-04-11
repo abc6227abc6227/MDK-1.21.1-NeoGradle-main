@@ -18,7 +18,7 @@ public class ClientListener {
                 context -> new MechCreationStationTileRenderer()
         );
         event.registerEntityRenderer(
-                LwlwlwlmechModEntities.NAUTILUS_SUB.get(),
+                LwlwlwlmechEntities.NAUTILUS_SUB.get(),
                 NautilusSubRenderer::new
         );
     }

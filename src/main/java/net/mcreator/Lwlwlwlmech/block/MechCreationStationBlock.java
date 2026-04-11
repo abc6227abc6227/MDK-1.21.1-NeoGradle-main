@@ -81,9 +81,37 @@ public class MechCreationStationBlock extends BaseEntityBlock {
 
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
+        if (!level.isClientSide && player instanceof ServerPlayer serverPlayer) {
+            serverPlayer.openMenu(new MenuProvider() {
+                @Override
+                public Component getDisplayName() {
+                    return Component.literal("Mech Creation Station");
+                }
+
+                @Nullable
+                @Override
+                public AbstractContainerMenu createMenu(int id, Inventory inv, Player p) {
+                    return new MechCreationStationGUIMenu(id, inv, pos);
+                }
+            }, buf -> {
+                // 关键：把坐标写入网络包
+                buf.writeBlockPos(pos);
+            });
+        }
+        return InteractionResult.SUCCESS;
+    }
+
+
+/*
+    @Override
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
         System.out.println("[制造站] 右键点击，坐标: " + pos.getX() + ", " + pos.getY() + ", " + pos.getZ());
 
         if (!level.isClientSide && player instanceof ServerPlayer serverPlayer) {
+            // 在打开菜单前设置静态变量
+
+
+
             serverPlayer.openMenu(new SimpleMenuProvider(
                     (id, inv, p) -> new MechCreationStationGUIMenu(id, inv, pos),
                     Component.literal("Mech Creation Station")
@@ -97,4 +125,7 @@ public class MechCreationStationBlock extends BaseEntityBlock {
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
         return null;
     }
+
+
+    */
 }

@@ -2,7 +2,7 @@ package net.mcreator.Lwlwlwlmech.procedures;
 
 import net.mcreator.Lwlwlwlmech.LwlwlwlmechMod;
 import net.mcreator.Lwlwlwlmech.block.MechCreationStationBlock;
-import net.mcreator.Lwlwlwlmech.init.LwlwlwlmechModEntities;
+import net.mcreator.Lwlwlwlmech.init.LwlwlwlmechEntities;
 import net.mcreator.Lwlwlwlmech.init.LwlwlwlmechModItems;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -121,7 +121,7 @@ public class MechCreationStationOnBlockRightClickedProcedure {
         // 380 ticks (19秒) 后生成实体
         LwlwlwlmechMod.queueServerWork(380, () -> {
             if (world instanceof ServerLevel serverLevel) {
-                LwlwlwlmechModEntities.NAUTILUS_SUB.get().spawn(
+                LwlwlwlmechEntities.NAUTILUS_SUB.get().spawn(
                         serverLevel,
                         pos.above(2),
                         MobSpawnType.MOB_SUMMONED

@@ -11,6 +11,7 @@ import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
+import net.mcreator.Lwlwlwlmech.entity.NautilusSubEntity;
 
 public record NautilusUpMessage(int action) implements CustomPacketPayload {
     public static final CustomPacketPayload.Type<NautilusUpMessage> TYPE = new CustomPacketPayload.Type<>(
@@ -33,10 +34,9 @@ public record NautilusUpMessage(int action) implements CustomPacketPayload {
     private void handle(IPayloadContext ctx) {
         ctx.enqueueWork(() -> {
             Player player = ctx.player();
-            if (action == 0) {
-                NautilusUpOnKeyPressedProcedure.execute(player);
-            } else {
-                NautilusUpOnKeyReleasedProcedure.execute(player);
+            if (player.getVehicle() instanceof NautilusSubEntity sub) {
+                sub.setUpPressed(action == 0);
+                System.out.println("[网络] 服务端设置 upPressed = " + (action == 0));
             }
         });
     }

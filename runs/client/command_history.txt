@@ -1,31 +1,4 @@
 /kill
-/gamemode
-/gamemode creative
-/gamemode survival
-/kill
-/gamemode creative
-/gamemode survival
-/kill
-/gamemode survival
-/kill
-/w
-/kill
-/w
-/kill
-/w
-/kill
-/
-/kill
-/time set day
-/gamemode creative
-/gamemode
-/gamemode survival
-/gamemode creative
-/gamemode survival
-/kill
-/gamemode creative
-/gamemode survival
-/kill
 /time set day
 /kill
 /corehealth_skip
@@ -48,3 +21,30 @@
 /setblock 118 80 1 mofus_better_end_:mech_creation_station[animation=2]
 /summon mofus_better_end_:nautilus_sub ~ ~ ~
 /summon lwl
+/summon lwlwlwl_mech_
+/give Dev Lwl
+/summon naui
+/summon lwlwlwl_mech_:nautilus_sub
+/give Dev lwlwlwl_mech_:mech_creation_station
+/give Dev lwlwlwl_mech_:
+/give Dev lwlwlwl_mech_
+/give Dev lwlwlwl_mech_:nautilus_sub_blueprint
+/give Dev lwlwlwl_mech
+/give Dev lwlwlwl_mech_:nautilus_thruster
+/give Dev lwlwlwl_mech_:titanium_ingot
+/setblock 79 77 -14 lwlwlwl_mech_:mech_creation_station[animation=2]
+/summon lwlwlwl_mech_:nautilus_sub
+/data get block 3 74 -110
+/setblock 2 72 -111 lwlwlwl_mech_:mech_creation_station[animation=2]
+/data get block 2 72 -111
+/gamerule keepInventory true
+/gamemode survival
+/gamemode creative
+/gamemode survival
+/gamemode creative
+/gamemode survival
+/kill
+/gamemode creative
+/kill
+/gamemode survival
+/setblock 100 49 0 lwlwlwl_mech_:mech_creation_station[animation=2]

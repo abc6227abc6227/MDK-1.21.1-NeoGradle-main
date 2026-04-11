@@ -19,8 +19,8 @@ public class MechCreationStationGUIScreen extends AbstractContainerScreen<MechCr
 
     public MechCreationStationGUIScreen(MechCreationStationGUIMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
-        this.imageWidth = 250;
-        this.imageHeight = 211;
+        this.imageWidth = 176;
+        this.imageHeight = 166;
     }
 
     @Override
@@ -45,7 +45,12 @@ public class MechCreationStationGUIScreen extends AbstractContainerScreen<MechCr
 
     @Override
     protected void renderBg(GuiGraphics guiGraphics, float partialTick, int mouseX, int mouseY) {
+        // 缩放纹理到合适大小
+        int scaledWidth = 176;
+        int scaledHeight = 166;
         guiGraphics.blit(TEXTURE, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight);
+
+        // 蓝图预览也需要调整位置
         if (NautilusBlueprintDisplayGUIProcedure.execute(this.minecraft.player)) {
             guiGraphics.blit(NAUTILUS_BLUEPRINT, this.leftPos + 143, this.topPos + 12, 0, 0, 96, 96, 96, 96);
         }

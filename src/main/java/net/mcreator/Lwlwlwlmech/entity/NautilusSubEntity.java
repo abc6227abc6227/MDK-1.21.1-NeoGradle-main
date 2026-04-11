@@ -1,7 +1,8 @@
 package net.mcreator.Lwlwlwlmech.entity;
 
-import net.mcreator.Lwlwlwlmech.init.LwlwlwlmechModEntities;
+import net.mcreator.Lwlwlwlmech.init.LwlwlwlmechEntities;
 import net.mcreator.Lwlwlwlmech.init.LwlwlwlmechModKeyMappings;
+import net.mcreator.Lwlwlwlmech.network.NautilusUpMessage;
 import net.mcreator.Lwlwlwlmech.procedures.NautilusSubEntityDiesProcedure;
 import net.mcreator.Lwlwlwlmech.procedures.NautilusSubEntityIsHurtProcedure;
 import net.mcreator.Lwlwlwlmech.procedures.NautilusSubOnEntityTickUpdateProcedure;
@@ -27,6 +28,11 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.entity.MoverType;
 
+import net.mcreator.Lwlwlwlmech.network.NautilusUpMessage;
+import net.mcreator.Lwlwlwlmech.network.NautilusDownMessage;
+import net.mcreator.Lwlwlwlmech.network.NautilusForwardMessage;
+import net.mcreator.Lwlwlwlmech.network.NautilusThrustMessage;
+
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.AnimatableManager;
@@ -41,25 +47,11 @@ public class NautilusSubEntity extends PathfinderMob implements GeoEntity {
     private static final EntityDataAccessor<String> ANIMATION = SynchedEntityData.defineId(NautilusSubEntity.class, EntityDataSerializers.STRING);
     private static final EntityDataAccessor<String> TEXTURE = SynchedEntityData.defineId(NautilusSubEntity.class, EntityDataSerializers.STRING);
 
-    private float currentYaw = 0;
-    private Vec3 targetPosition = Vec3.ZERO;
-
-    private int syncCounter = 0;
-
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     public String animationprocedure = "empty";
     private String prevAnim = "empty";
 
-
-    // 构造函数1：被 PlayMessages 构造函数调用
-    public NautilusSubEntity(EntityType<? extends NautilusSubEntity> type, Level world) {
-        super(type, world);
-        this.moveControl = new FlyingMoveControl(this, 10, true);
-        this.setNoGravity(true);
-        this.currentYaw = this.getYRot();
-        this.targetYaw = this.getYRot();
-    }
-
+    // 按键状态（服务端用）
     private boolean forwardPressed = false;
     private boolean thrustPressed = false;
     private boolean upPressed = false;
@@ -70,16 +62,18 @@ public class NautilusSubEntity extends PathfinderMob implements GeoEntity {
     public void setUpPressed(boolean pressed) { this.upPressed = pressed; }
     public void setDownPressed(boolean pressed) { this.downPressed = pressed; }
 
+    public NautilusSubEntity(EntityType<? extends NautilusSubEntity> type, Level world) {
+        super(type, world);
+        this.moveControl = new FlyingMoveControl(this, 10, true);
+        this.setNoGravity(true);
+    }
+
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
         builder.define(SHOOT, false);
         builder.define(ANIMATION, "undefined");
         builder.define(TEXTURE, "nautilussub");
-
-
-
-
 
     }
 
@@ -142,46 +136,20 @@ public class NautilusSubEntity extends PathfinderMob implements GeoEntity {
         if (!this.level().isClientSide) {
             if (!player.isPassenger()) {
                 player.startRiding(this);
-                System.out.println("[实体] 玩家开始骑乘: " + player.getName().getString());
+                System.out.println("[实体] 玩家开始骑乘");
             }
         }
         return InteractionResult.SUCCESS;
     }
-/*
-    @Override
-    public void rideTick() {
-        super.rideTick();
-
-        // 获取所有乘客
-        if (!this.getPassengers().isEmpty()) {
-            Entity passenger = this.getPassengers().get(0);
-            // 强制让乘客的位置跟随鹦鹉螺号
-            passenger.setPos(this.getX(), this.getY() + 0.4, this.getZ());
-        }
-    }
-
-*/
 
     @Override
     protected void positionRider(Entity passenger, Entity.MoveFunction callback) {
-        // 直接设置乘客位置到鹦鹉螺号上方，忽略默认计算
-        double offsetY = 0.4;  // 乘客坐高
-        callback.accept(passenger, this.getX(), this.getY() + offsetY, this.getZ());
+        callback.accept(passenger, this.getX(), this.getY() + 0.4, this.getZ());
     }
-/*
-    @Override
-    public void onPassengerTurned(Entity passenger) {
-        super.onPassengerTurned(passenger);
-        passenger.setPos(passenger.getX(), this.getY() + 0.4, passenger.getZ());
-    }
-*/
-    private float smoothYaw = 0;
-    private float targetYaw = 0;
-
 
     @Override
     public void tick() {
-        super.tick();  // ← 必须加上
+        super.tick();
 
         Entity passenger = null;
         if (!this.getPassengers().isEmpty()) {
@@ -192,18 +160,59 @@ public class NautilusSubEntity extends PathfinderMob implements GeoEntity {
             return;
         }
 
-        // 设置朝向（服务端和客户端都执行）
+        // 设置朝向
         this.setYRot(passenger.getYRot());
 
-        // 只在服务端执行移动
-        if (!this.level().isClientSide) {
-            CompoundTag data = this.getPersistentData();
-            boolean forward = data.getDouble("nautilusF") == 1;
-            boolean thrust = data.getDouble("NautilusThrust") == 1;
-            boolean up = data.getDouble("nautilusup") == 1;
-            boolean down = data.getDouble("nautilusdown") == 1;
+        // ========== 客户端：读取按键，发送网络消息 ==========
+        if (this.level().isClientSide) {
+            boolean up = LwlwlwlmechModKeyMappings.nautilusUp.isDown();
+            boolean down = LwlwlwlmechModKeyMappings.nautilusDown.isDown();
+            boolean forward = LwlwlwlmechModKeyMappings.nautilusForward.isDown();
+            boolean thrust = LwlwlwlmechModKeyMappings.nautilusThrust.isDown();
 
-            double speed = thrust ? 0.5 : (forward ? 0.2 : 0);
+            // 设置动画（同时保存到实体数据）
+            String newAnim = thrust ? "thrust" : (forward ? "walk" : "idle");
+            this.animationprocedure = newAnim;
+            this.entityData.set(ANIMATION, newAnim);  // ← 同步到服务端
+
+            // 同步到服务端（通过实体数据）
+            this.getEntityData().set(ANIMATION, newAnim);
+
+
+            // 根据按键设置动画
+            if (thrust) {
+                this.animationprocedure = "thrust";
+            } else if (forward) {
+                this.animationprocedure = "walk";
+            } else if (up) {
+                this.animationprocedure = "up";
+            } else if (down) {
+                this.animationprocedure = "down";
+            } else {
+                this.animationprocedure = "idle";
+            }
+
+            // 发送网络消息
+
+            if (down != this.downPressed) {
+                NautilusDownMessage.send(down ? 0 : 1);
+            }
+            if (forward != this.forwardPressed) {
+                NautilusForwardMessage.send(forward ? 0 : 1);
+            }
+            if (thrust != this.thrustPressed) {
+                NautilusThrustMessage.send(thrust ? 0 : 1);
+            }
+            if (up != this.upPressed) {
+                NautilusUpMessage.send(up ? 0 : 1);
+            }
+        }
+
+        // ========== 服务端：执行移动 ==========
+        if (!this.level().isClientSide) {
+            // 从实体数据读取动画（自动同步给所有客户端）
+            this.animationprocedure = this.entityData.get(ANIMATION);
+            double speed = thrustPressed ? 0.5 : (forwardPressed ? 0.2 : 0);
             double moveX = 0, moveY = 0, moveZ = 0;
 
             if (speed > 0) {
@@ -211,36 +220,20 @@ public class NautilusSubEntity extends PathfinderMob implements GeoEntity {
                 moveX = -Math.sin(rad) * speed;
                 moveZ = Math.cos(rad) * speed;
             }
-            if (up) moveY = 0.3;
-            if (down) moveY = -0.3;
+            if (upPressed) moveY = 0.3;
+            if (downPressed) moveY = -0.3;
 
-            if (speed > 0 || up || down) {
+            if (speed > 0 || upPressed || downPressed) {
                 this.setPos(this.getX() + moveX, this.getY() + moveY, this.getZ() + moveZ);
-                passenger.setPos(this.getX(), this.getY() + 1.2, this.getZ());
             }
-        }
-
-        // 客户端只负责读取按键
-        if (this.level().isClientSide) {
-            boolean up = LwlwlwlmechModKeyMappings.nautilusUp.isDown();
-            boolean down = LwlwlwlmechModKeyMappings.nautilusDown.isDown();
-            boolean forward = LwlwlwlmechModKeyMappings.nautilusForward.isDown();
-            boolean thrust = LwlwlwlmechModKeyMappings.nautilusThrust.isDown();
-
-            this.getPersistentData().putDouble("nautilusup", up ? 1 : 0);
-            this.getPersistentData().putDouble("nautilusdown", down ? 1 : 0);
-            this.getPersistentData().putDouble("nautilusF", forward ? 1 : 0);
-            this.getPersistentData().putDouble("NautilusThrust", thrust ? 1 : 0);
+            System.out.println("[移动] 上=" + upPressed + " 下=" + downPressed + " Y偏移=" + moveY);
         }
     }
-
 
     @Override
     public void travel(Vec3 travelVector) {
         super.travel(travelVector);
     }
-
-
 
     @Override
     protected void checkFallDamage(double y, boolean onGround, BlockState state, BlockPos pos) {

@@ -3,7 +3,7 @@ loaderVersion="[4,)"
 license="All rights reserved"
 
 [[mods]]
-modId="minecraft"
+modId="lwlwlwl_mech_"
 version="1.0.0"
 displayName="Lwlwlwlmech"
 logoFile="logo.png"
@@ -15,21 +15,21 @@ A mod that adds:
 - Nautilus Submarine
 '''
 
-[[dependencies.Lwlwlwlmech]]
+[[dependencies.lwlwlwl_mech_]]
 modId="minecraft"
 mandatory=true
 versionRange="[1.21,1.22)"
 ordering="NONE"
 side="BOTH"
 
-[[dependencies.Lwlwlwlmech]]
+[[dependencies.lwlwlwl_mech_]]
 modId="neoforge"
 mandatory=true
 versionRange="[21.1,)"
 ordering="NONE"
 side="BOTH"
 
-[[dependencies.Lwlwlwlmech]]
+[[dependencies.lwlwlwl_mech_]]
 modId="geckolib"
 mandatory=true
 versionRange="[4.8,)"

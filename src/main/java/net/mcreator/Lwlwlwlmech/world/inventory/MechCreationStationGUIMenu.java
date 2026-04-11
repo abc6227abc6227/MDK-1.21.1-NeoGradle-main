@@ -11,13 +11,20 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import net.neoforged.neoforge.items.SlotItemHandler;
 
+
 public class MechCreationStationGUIMenu extends AbstractContainerMenu {
     // 静态变量，用于在两次构造函数调用之间传递坐标
-    private static BlockPos savedPos = BlockPos.ZERO;
+    private static BlockPos currentPos = BlockPos.ZERO;
+    public static BlockPos savedPos = BlockPos.ZERO;
+
+    //private static BlockPos savedPos = BlockPos.ZERO;
 
     public final Player player;
     private final BlockPos pos;
     private final ItemStackHandler inventory = new ItemStackHandler(17);
+    public static void setCurrentPos(BlockPos pos) {
+        currentPos = pos;
+    }
 
     // 构造函数1：服务器端创建（坐标正确）
     public MechCreationStationGUIMenu(int id, Inventory inv, BlockPos pos) {
@@ -25,27 +32,28 @@ public class MechCreationStationGUIMenu extends AbstractContainerMenu {
         this.player = inv.player;
 
         // 保存坐标供第二次调用使用
-        savedPos = pos;
+        //savedPos = pos;
         this.pos = pos;
+        //currentPos = pos;
 
         System.out.println("[GUI菜单] 构造函数1接收坐标: " + pos.getX() + ", " + pos.getY() + ", " + pos.getZ());
 
         initSlots(inv);
     }
-
+/*
     // 构造函数2：客户端从网络包创建（buf 为 null，坐标错误）
     public MechCreationStationGUIMenu(int id, Inventory inv, FriendlyByteBuf buf) {
         super(LwlwlwlmechModMenus.MECH_CREATION_STATION_GUI.get(), id);
         this.player = inv.player;
 
         // 使用保存的坐标
-        this.pos = savedPos;
+        this.pos = currentPos;
 
         System.out.println("[GUI菜单] 构造函数2接收buf，使用保存坐标: " + this.pos.getX() + ", " + this.pos.getY() + ", " + this.pos.getZ());
 
         initSlots(inv);
     }
-
+*/
     private void initSlots(Inventory inv) {
         // 17个槽位
         int[][] slots = {

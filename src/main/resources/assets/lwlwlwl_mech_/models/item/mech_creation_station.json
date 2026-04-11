@@ -1,6 +1,6 @@
 {
-  "parent": "item/generated",
-  "textures": {
-    "layer0": "lwlwlwl_mech_:item/station"
-  }
+    "parent": "item/generated",
+    "textures": {
+        "layer0": "lwlwlwl_mech_:item/mech_creation_station"
+    }
 }

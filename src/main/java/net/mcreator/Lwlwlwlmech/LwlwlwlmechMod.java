@@ -21,7 +21,7 @@ public class LwlwlwlmechMod {
     public LwlwlwlmechMod(IEventBus modEventBus) {
         LwlwlwlmechModBlocks.BLOCKS.register(modEventBus);
         LwlwlwlmechModItems.ITEMS.register(modEventBus);
-        LwlwlwlmechModEntities.ENTITIES.register(modEventBus);
+        LwlwlwlmechEntities.ENTITIES.register(modEventBus);
         LwlwlwlmechModBlockEntities.BLOCK_ENTITIES.register(modEventBus);
         LwlwlwlmechModMenus.MENUS.register(modEventBus);
 
@@ -50,7 +50,7 @@ public class LwlwlwlmechMod {
 
     @SubscribeEvent
     public void registerAttributes(EntityAttributeCreationEvent event) {
-        event.put(LwlwlwlmechModEntities.NAUTILUS_SUB.get(), NautilusSubEntity.createAttributes().build());
+        event.put(LwlwlwlmechEntities.NAUTILUS_SUB.get(), NautilusSubEntity.createAttributes().build());
     }
 
     // 延迟执行任务
